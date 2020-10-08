@@ -30,15 +30,39 @@ def result_of(pool, skill, style, focus, difficulty):
   
   return (passed, comp, momentum)
 
-def generate_pools():
+def generate_pools(mo):
+  # The runtime complexity on this is bad and I should feel bad, but it's
+  # a very easy way to enumerate permutations.
   pools = []
-  for x in range(1,21):
-    for y in range(1,21):
-      pools.append((x, y))
+  if mo == -1:
+    for x in range(1, 21):
+      pools.append((x,))
+  elif mo == 0:
+    for x in range(1,21):
+      for y in range(1,21):
+        pools.append((x, y))
+  elif mo == 1:
+    for x in range(1, 21):
+      for y in range(1, 21):
+        for z in range(1, 21):
+          pools.append((x, y, z))
+  elif mo == 2:
+    for x in range(1, 21):
+      for y in range(1, 21):
+        for z in range(1, 21):
+          for w in range(1, 21):
+            pools.append((x, y, z, w))
+  else:
+    for x in range(1, 21):
+      for y in range(1, 21):
+        for z in range(1, 21):
+          for w in range(1, 21):
+            for v in range(1, 21):
+              pools.append((x, y, z, w, v))
   return pools
 
-def tabulate(skill, style, focus, difficulty):
-  pools = generate_pools()
+def tabulate(skill, style, focus, difficulty, momentum):
+  pools = generate_pools(momentum)
   results = []
   for pool in pools:
     results.append(result_of(pool, skill, style, focus, difficulty))
@@ -94,9 +118,17 @@ def tabulate(skill, style, focus, difficulty):
   mo_total = (s_3_mo + s_2_mo + s_1_mo + s_comp_1_mo)
   not_mo_total = n - mo_total
   
+  header = ', '.join([
+    f'For skill={skill}',
+    f'style={style}',
+    f'focus={focus}',
+    f'diff={difficulty}',
+    f'mo={momentum}'
+  ])
+  
   print('Dishonored RPG')
   print('-------------------------------------------')
-  print(f'For skill={skill}, style={style}, focus={focus}, diff={difficulty}')
+  print(header)
   print(f'Number of possible outcomes: {n}')
   print('-------------------------------------------')
   print(f'total successes        : {s_total} ({s_total/pct}%)')
@@ -120,7 +152,7 @@ def tabulate(skill, style, focus, difficulty):
   print('-------------------------------------------')
 
 
-def main(skill=None, style=None, focus=None, diff=None):
+def main(skill=None, style=None, focus=None, diff=None, momentum=None):
   if skill is None:
     skill = int(input('Enter skill value: '))
   if style is None:
@@ -129,7 +161,10 @@ def main(skill=None, style=None, focus=None, diff=None):
     focus = int(input('Enter focus value: '))
   if diff is None:
     diff = int(input('Enter difficulty: '))
-  tabulate(skill, style, focus, diff)
+  if momentum is None:
+    s = input('Enter momentum (-1 for a help pool): ')
+    momentum = 0 if not s else int(s)
+  tabulate(skill, style, focus, diff, momentum)
 
 if __name__ == '__main__':
   import sys
