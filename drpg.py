@@ -76,48 +76,43 @@ def tabulate(skill, style, focus, difficulty, momentum):
   s_3_mo = 0
   s_comp = 0
   f_1_comp = 0
-  f_2_comp = 0
-  s_comp_1_mo = 0
+  f_2p_comp = 0
+  s_comp_mo = 0
   
   c_total = 0
-  not_c_total = 0
   
   for result in results:
-    if result[0]:
+    success, comp, mo = result
+    if success:
       s_total += 1
-      if result[1] and result[2]:
-        s_comp_1_mo += 1
+      if comp and mo:
+        s_comp_mo += 1
         c_total += 1
-      if result[1] and not result[2]:
+      if comp and not mo:
         s_comp += 1
         c_total += 1
-      if not result[1] and result[2]:
-        if result[2] == 1:
+      if not comp and mo:
+        if mo == 1:
           s_1_mo += 1
-        elif result[2] == 2:
+        elif mo == 2:
           s_2_mo += 1
         else:
           s_3_mo += 1
-        not_c_total += 1
-      if not result[1] and not result[2]:
-        not_c_total += 1
     else:
       f_total += 1
-      if result[1] == 1:
+      if comp == 1:
         f_1_comp += 1
         c_total += 1
-      elif result[1] == 2:
-        f_2_comp += 1
+      elif comp == 2:
+        f_2p_comp += 1
         c_total += 1
-      else:
-        not_c_total += 1
   
-  s_plain = s_total - (s_3_mo + s_2_mo + s_1_mo + s_comp + s_comp_1_mo)
-  f_plain = f_total - (f_1_comp + f_2_comp)
+  s_plain = s_total - (s_3_mo + s_2_mo + s_1_mo + s_comp + s_comp_mo)
+  f_plain = f_total - (f_1_comp + f_2p_comp)
   
-  mo_total = (s_3_mo + s_2_mo + s_1_mo + s_comp_1_mo)
+  mo_total = (s_3_mo + s_2_mo + s_1_mo + s_comp_mo)
   not_mo_total = n - mo_total
-  
+  not_c_total = n - c_total 
   header = ', '.join([
     f'For skill={skill}',
     f'style={style}',
@@ -140,14 +135,14 @@ def tabulate(skill, style, focus, difficulty, momentum):
   print(f'rolls w/  mo           : {mo_total} ({mo_total/pct}%)')
   print(f'rolls w/o mo           : {not_mo_total} ({not_mo_total/pct}%)')
   print('-------------------------------------------')
-  print(f'successes, 3 mo        : {s_3_mo} ({s_3_mo/pct}%)')
+  print(f'successes, 3+ mo       : {s_3_mo} ({s_3_mo/pct}%)')
   print(f'successes, 2 mo        : {s_2_mo} ({s_2_mo/pct}%)')
   print(f'successes, 1 mo        : {s_1_mo} ({s_1_mo/pct}%)')
-  print(f'successes, 1 comp      : {s_comp} ({s_comp/pct}%)')
-  print(f'successes, 1 comp, 1 mo: {s_comp_1_mo} ({s_comp_1_mo/pct}%)')
+  print(f'successes, comp        : {s_comp} ({s_comp/pct}%)')
+  print(f'successes, comp, mo    : {s_comp_mo} ({s_comp_mo/pct}%)')
   print(f'successes, plain       : {s_plain} ({s_plain/pct}%)')
   print(f'failures,  1 comp      : {f_1_comp} ({f_1_comp/pct}%)')
-  print(f'failures,  2 comp      : {f_2_comp} ({f_2_comp/pct}%)')
+  print(f'failures,  2+ comp      : {f_2p_comp} ({f_2p_comp/pct}%)')
   print(f'failures,  plain       : {f_plain} ({f_plain/pct}%)')
   print('-------------------------------------------')
 
